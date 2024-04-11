@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Profiles</title>
+</head>
+<body>
+    <h1>Profiles</h1>
+    <ul>
+        {% for profile in profiles %}
+            <li>Username: {{ profile[0] }}</li>
+            <li><img src="{{ profile[1] }}" alt="Profile Image"></li>
+            <li>Name: {{ profile[2] }}</li>
+            <br>
+        {% endfor %}
+    </ul>
+</body>
+</html>

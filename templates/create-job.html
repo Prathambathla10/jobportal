@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job</title>
+</head>
+<body>
+    <h2>Job Creation Form</h2>
+    <form action="/create-job" method="POST">
+        <label for="jobTitle">Job Title:</label><br>
+        <input type="text" id="jobTitle" name="jobTitle" required><br><br>
+        
+        <label for="employerName">HR Name:</label><br>
+        <input type="text" id="employerName" name="employerName" required><br><br>
+
+        <label for="stipend">Stipend :</label><br>
+        <input type="text" id="stipend" name="stipend" required><br><br>
+        
+        
+        <label for="jobDescription">Job Description:</label><br>
+        <input type="text" id="jobDescription" name="jobDescription"required></input><br>
+
+        <h4>Check if Job is vacant </h4>
+        <h4>Don't check if it's filled  </h4>
+        <input type="checkbox" id="checkbox" name="checkbox" value="Vacant">
+        <label for="checkbox">Job status ( Vacant )</label><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
