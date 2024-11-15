@@ -26,7 +26,7 @@ mail_config = {
     "MAIL_USE_TLS": False,  
     "MAIL_USE_SSL":True,
     "MAIL_USERNAME": "prathamsautomatedmails@gmail.com",
-    "MAIL_PASSWORD": "fauv crto riuu ozbg",
+    "MAIL_PASSWORD": "",
     "MAIL_DEFAULT_SENDER" :"prathamsautomatedmails@gmail.com"
 }
 
