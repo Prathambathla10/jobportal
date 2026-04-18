@@ -1,14 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search jobs</title>
-</head>
-<body>
-    <form action="/user-job-search" , method="post" >
-        <input type="text" id="job" name="job" placeholder="Search for jobs...">
-        <input type="submit" value="Search">
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Search Jobs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header">
+            <h2 class="card-title">Search Jobs</h2>
+            <p class="card-subtitle">Find the perfect job for your skills.</p>
+        </div>
+        
+        <form action="/user-job-search" method="post">
+            <div class="form-group">
+                <label for="job">Job Title Keyword</label>
+                <input type="text" id="job" name="job" required placeholder="e.g. Software Engineer, Designer...">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Search Jobs</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <a href="/user-dashboard">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

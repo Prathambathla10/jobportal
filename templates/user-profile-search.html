@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Profiles{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header">
+            <h2 class="card-title">Search Profiles</h2>
+            <p class="card-subtitle">Find other professionals on ProJob Portal.</p>
+        </div>
+        
+        <form action="/user-profile-search" method="post">
+            <div class="form-group">
+                <label for="profile">Username</label>
+                <input type="text" id="profile" name="profile" required placeholder="Enter exact username to search">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <a href="/user-dashboard">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,19 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    <ul>
-    <li><a href="create-job">Create a Job posting </a></li>
-    <br>
-    <li><a href="update-job">Update a Job posting </a></li>
-    <br>
-    <li><a href="delete-job">Delete a Job posting </a></li>
-    <br>
-    <li><a href="suspend-account">suspend-account</a></li>
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Employer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title">Employer Dashboard</h2>
+            <p class="card-subtitle">Manage your job postings and company account.</p>
+        </div>
+        
+        <div class="grid">
+            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
+                <h3 class="mb-2">Post a Job</h3>
+                <p class="text-muted mb-3">Create a new job listing to find candidates.</p>
+                <a href="/create-job" class="btn btn-primary btn-block">Create Job Posting</a>
+            </div>
+            
+            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
+                <h3 class="mb-2">Manage Jobs</h3>
+                <p class="text-muted mb-3">Update or remove your existing job postings.</p>
+                <a href="/update-job" class="btn btn-secondary btn-block mb-2">Update Job</a>
+                <a href="/delete-job" class="btn btn-secondary btn-block" style="color: #dc2626;">Delete Job</a>
+            </div>
+            
+            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
+                <h3 class="mb-2">Account Admin</h3>
+                <p class="text-muted mb-3">Admin actions for your employer account.</p>
+                <a href="/suspend-account" class="btn btn-secondary btn-block" style="color: #dc2626;">Suspend Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

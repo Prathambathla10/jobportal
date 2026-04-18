@@ -1,17 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>View Profiles</title>
-</head>
-<body>
-    <h1>Profiles</h1>
-    <ul>
-        {% for profile in profiles %}
-            <li>Username: {{ profile[0] }}</li>
-            <li><img src="{{ profile[1] }}" alt="Profile Image"></li>
-            <li>Name: {{ profile[2] }}</li>
-            <br>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}View Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <div class="card-header">
+            <h2 class="card-title">User Profile</h2>
+        </div>
+        
+        {% if profiles %}
+            {% for profile in profiles %}
+                <div class="profile-details mb-4">
+                    {% if profile[2] %}
+                        <!-- Assuming profile[2] is the image path -->
+                        <img src="{{ url_for('static', filename=profile[2].split('static/')[1] if 'static/' in profile[2] else profile[2]) }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; border: 3px solid var(--primary-color);">
+                    {% else %}
+                        <div style="width: 150px; height: 150px; border-radius: 50%; background-color: var(--secondary-color); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-muted);">
+                            👤
+                        </div>
+                    {% endif %}
+                    
+                    <h3 class="mb-1">{{ profile[1] }}</h3> <!-- Assuming profile[1] is name -->
+                    <p class="text-muted">@{{ profile[0] }}</p> <!-- Assuming profile[0] is username -->
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center">
+                <p>No profile details found.</p>
+            </div>
+        {% endif %}
+        
+        <a href="/user-profile-search" class="btn btn-secondary mt-3">Back to Search</a>
+    </div>
+</div>
+{% endblock %}

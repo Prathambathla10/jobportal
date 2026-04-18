@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGN UP SUCCESSFUL </title>
-</head>
-<body>
-    YOU ARE SUCCESSFUL SIGNED UP !!! 
-    NOW YOU CAN <a href="employeer-login"> LOG IN </a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Signup Complete{% endblock %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+        <div class="mb-4" style="font-size: 3rem; color: #10b981;">✓</div>
+        <h2 class="card-title mb-3">Profile Created!</h2>
+        <p class="mb-4">Your employer profile has been successfully set up.</p>
+        <a href="/employeer-login" class="btn btn-primary btn-block">Go to Login</a>
+    </div>
+</div>
+{% endblock %}

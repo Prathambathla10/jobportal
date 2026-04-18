@@ -1,18 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Job info</title>
-</head>
-<body>
-    <h2> Delete Job postings !!</h2>
-    <form action="/delete-job" method="POST">
-        <h3>NOTE : Job will be deleted by title</h3>
-        <label for="jobTitle">Job Title:</label><br>
-        <input type="text" id="jobTitle" name="jobTitle" required><br><br>
+{% extends 'base.html' %}
+
+{% block title %}Delete Job Posting{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 500px; margin: 0 auto; border-top: 4px solid #dc2626;">
+        <div class="card-header">
+            <h2 class="card-title">Delete Job Posting</h2>
+            <p class="card-subtitle text-muted">This action cannot be undone.</p>
+        </div>
         
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
+        <form action="/delete-job" method="POST">
+            <div class="form-group">
+                <label for="jobTitle">Job Title to Delete</label>
+                <input type="text" id="jobTitle" name="jobTitle" required placeholder="Enter exact job title">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block mb-3" style="background-color: #dc2626;">Permanently Delete Job</button>
+        </form>
+        
+        <div class="text-center">
+            <a href="/employeer-dashboard">Cancel and Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
