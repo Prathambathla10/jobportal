@@ -23,7 +23,7 @@
         </div>
     </nav>
 
-    <main>
+    <main class="fade-in">
         {% block content %}
         {% endblock %}
     </main>
@@ -31,5 +31,8 @@
     <footer>
         <p>&copy; 2026 ProJob Portal. Designed for professionals.</p>
     </footer>
+
+    <!-- Main Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
