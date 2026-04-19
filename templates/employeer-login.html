@@ -1,31 +1,25 @@
 {% extends 'base.html' %}
-
 {% block title %}Employer Login{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="card" style="max-width: 500px; margin: 0 auto;">
+<div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+    <div class="card" style="width: 100%; max-width: 450px; animation: slideInLeft 0.6s ease-out forwards;">
         <div class="card-header">
-            <h2 class="card-title">Employer Login</h2>
-            <p class="card-subtitle">Access your employer dashboard to manage jobs.</p>
+            <h2 class="card-title text-gradient">Employer Portal</h2>
+            <p class="card-subtitle">Access your company dashboard</p>
         </div>
-        
         <form action="/employeer-login" method="post">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required placeholder="Enter your username">
+                <label for="username">Employer Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your company username">
             </div>
-            
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-block mb-3">Log In as Employer</button>
+            <button type="submit" class="btn btn-primary btn-block mt-2 mb-4">Sign In</button>
         </form>
-        
-        <div class="text-center mt-3">
-            <p>Don't have an employer account? <a href="/employeer-signup">Sign up here</a></p>
+        <div class="text-center">
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Need an employer account? <a href="/employeer-signup" style="font-weight: 600;">Sign up</a></p>
         </div>
     </div>
 </div>

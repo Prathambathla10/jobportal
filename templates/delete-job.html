@@ -9,16 +9,17 @@
             <h2 class="card-title">Delete Job Posting</h2>
             <p class="card-subtitle text-muted">This action cannot be undone.</p>
         </div>
-        
+
         <form action="/delete-job" method="POST">
             <div class="form-group">
                 <label for="jobTitle">Job Title to Delete</label>
                 <input type="text" id="jobTitle" name="jobTitle" required placeholder="Enter exact job title">
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-block mb-3" style="background-color: #dc2626;">Permanently Delete Job</button>
+
+            <button type="submit" class="btn btn-primary btn-block mb-3" style="background-color: #dc2626;">Permanently
+                Delete Job</button>
         </form>
-        
+
         <div class="text-center">
             <a href="/employeer-dashboard">Cancel and Go Back</a>
         </div>

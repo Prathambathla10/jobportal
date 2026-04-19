@@ -1,11 +1,12 @@
-from flask import Flask,render_template,redirect, request,url_for
+from flask import Flask,render_template,redirect, request,url_for, session
 import mysql.connector
 from flask_mail import Mail,Message
 app=Flask(__name__)
+app.secret_key = 'projob_portal_secret_key'
 
 
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'prathambathla'
+app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '0101'
 app.config['MYSQL_DB'] = 'jobportal'
 
@@ -69,9 +70,10 @@ def login1():
 
 
     elif user:
-        # Successful login, you can redirect to a dashboard or another page
-
-        return render_template("user-dashboard.html",username=username)
+        # Successful login, redirect to dashboard
+        session['username'] = username
+        session['role'] = 'user'
+        return redirect(url_for('user_dashboard'))
         
     else:
         # Invalid credentials, redirect back to the login page
@@ -110,26 +112,32 @@ def signup1():
     # Successful signup, you can redirect to a login page or another page
     return render_template("user-half-step.html",username=username)
 
-@app.route('/user-update-profile')
-def upd():
-    return render_template("user-update-profile.html")
-
-@app.route('/user-update-profile', methods=['GET','POST'])
+@app.route('/user-update-profile', methods=['GET', 'POST'])
 def update():
-    
-    connection = get_mysql_connection()
-    cursor = connection.cursor()
-    username = request.form['username']
-    password = request.form['password']
-    #name = request.form['name']
-    
-    # Update the user in the database
-    update_query = "UPDATE users SET password=%s WHERE username=%s"
-    cursor.execute(update_query, (password, username))
-    connection.commit()
-    connection.commit()
-    
-    return "Password Updated successfully !! \n Go back to login page"
+    if 'username' not in session or session.get('role') != 'user':
+        return redirect(url_for('login'))
+        
+    if request.method == 'GET':
+        return render_template("user-update-profile.html")
+        
+    if request.method == 'POST':
+        connection = get_mysql_connection()
+        cursor = connection.cursor()
+        username = session['username']
+        password = request.form['password']
+        confirm_password = request.form.get('confirm_password')
+        
+        if password != confirm_password:
+            return "Passwords do not match. Please try again."
+        
+        # Update the user in the database
+        update_query = "UPDATE users SET password=%s WHERE username=%s"
+        cursor.execute(update_query, (password, username))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        return "Password Updated successfully !! <br> Go back to <a href='/user-dashboard'>dashboard</a>"
 
 
 @app.route('/employeer-login')
@@ -153,9 +161,10 @@ def emp_login1():
     connection.close()
 
     if user:
-        # Successful login, you can redirect to a dashboard or another page
-
-        return render_template("employeer-dashboard.html",username=username)
+        # Successful login, redirect to dashboard
+        session['username'] = username
+        session['role'] = 'employer'
+        return redirect(url_for('employeer_dashboard'))
         
     else:
         # Invalid credentials, redirect back to the login page
@@ -295,12 +304,15 @@ def ujs1():
 
 @app.route('/create-job',methods=["GET","POST"])
 def cj():
+    if 'username' not in session or session.get('role') != 'employer':
+        return redirect(url_for('emp_login'))
+
     if request.method == "POST":
         connection = get_mysql_connection()
         cursor = connection.cursor()
 
         job_title= request.form["jobTitle"]
-        HR_name= request.form["employerName"]
+        HR_name= session['username']
         job_desc= request.form["jobDescription"]
         stipend= str(request.form["stipend"])
         option = request.form.get('checkbox')
@@ -315,62 +327,59 @@ def cj():
 
         cursor.close()
         connection.close()
-        return "Job Created Successfully !!!"
+        return "Job Created Successfully !!! <br> Go back to <a href='/employeer-dashboard'>dashboard</a>"
+
     return render_template("create-job.html")
 
 
-@app.route("/update-job")
-def jfr():
-    return render_template("update-job.html")
-
-@app.route('/update-job',methods=['GET','POST'])
-def uj():
-    try :
-        if request.method == "POST":
-            connection = get_mysql_connection()
-            cursor = connection.cursor()
-
-            job_title= request.form["jobTitle"]
-            HR_name= request.form["employerName"]
-            job_desc= request.form["jobDescription"]
-            option = request.form.get('checkbox')
-
-
-            if option is None :
-                option = "Vacant"
-            else:
-                option="Filled"
-
+@app.route("/edit-job/<int:id>", methods=['GET','POST'])
+def edit_job(id):
+    if 'username' not in session or session.get('role') != 'employer':
+        return redirect(url_for('emp_login'))
         
-            cursor.execute("UPDATE jobportal.jobs SET job_description = %s, job_status = %s WHERE emp_name = %s AND job_title = %s", (job_desc,option, HR_name, job_title))
-            connection.commit()
-            cursor.close()
-            connection.close()
-
-            return "updation successful"
-        
-    except mysql.connector.Error as error:
-        print("Error updating database: {}".format(error))  
+    connection = get_mysql_connection()
+    cursor = connection.cursor(dictionary=True)
     
-   
-@app.route("/delete-job")
-def dj():
-    return render_template("delete-job.html")
-
-@app.route('/delete-job',methods=['GET','POST'])
-def dj1():
     if request.method == "POST":
-        connection = get_mysql_connection()
-        cursor = connection.cursor()
-
-        job_title= request.form["jobTitle"]
-    
-        
-        cursor.execute("DELETE FROM jobs WHERE job_title = %s", (job_title,))
+        job_title = request.form["jobTitle"]
+        job_desc = request.form["jobDescription"]
+        stipend = str(request.form["stipend"])
+        option = request.form.get('checkbox')
+        if option is None:
+            option = "Vacant"
+        else:
+            option = "Filled"
+            
+        cursor.execute("UPDATE jobs SET job_title = %s, job_description = %s, stipend = %s, job_status = %s WHERE id = %s AND emp_name = %s", 
+                       (job_title, job_desc, stipend, option, id, session['username']))
         connection.commit()
         cursor.close()
         connection.close()
-        return "deletion successful"
+        return redirect(url_for('employeer_dashboard'))
+        
+    cursor.execute("SELECT * FROM jobs WHERE id = %s AND emp_name = %s", (id, session['username']))
+    job = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    
+    if not job:
+        return "Job not found", 404
+        
+    return render_template("edit-job.html", job=job)
+
+@app.route('/delete-job/<int:id>', methods=['POST'])
+def delete_job(id):
+    if 'username' not in session or session.get('role') != 'employer':
+        return redirect(url_for('emp_login'))
+        
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM jobs WHERE id = %s AND emp_name = %s", (id, session['username']))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    
+    return redirect(url_for('employeer_dashboard'))
     
 
 @app.route("/apply-for-job")
@@ -423,4 +432,29 @@ def sa1():
         return "Account suspended"
 
 
-app.run(debug=True)
+@app.route('/user-dashboard')
+def user_dashboard():
+    if 'username' in session and session.get('role') == 'user':
+        return render_template("user-dashboard.html", username=session['username'])
+    return redirect(url_for('login'))
+
+@app.route('/employeer-dashboard')
+def employeer_dashboard():
+    if 'username' in session and session.get('role') == 'employer':
+        username = session['username']
+        connection = get_mysql_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM jobs WHERE emp_name = %s", (username,))
+        jobs = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return render_template("employeer-dashboard.html", username=username, jobs=jobs)
+    return redirect(url_for('emp_login'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    app.run(debug=True)

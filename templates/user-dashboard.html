@@ -3,36 +3,88 @@
 {% block title %}User Dashboard{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title">Welcome to your Dashboard</h2>
-            <p class="card-subtitle">Manage your profile and find your next opportunity.</p>
+<div style="width: 100%;">
+    <div
+        style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: center; min-height: 60vh; justify-content: space-between;">
+
+        <!-- Left Side: Welcome Text -->
+        <div style="flex: 1 1 400px; padding: 2rem 0; max-width: 500px;">
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; animation: slideInLeft 0.8s ease-out forwards;">
+                <img src="./static/images/{{ username }}.png" alt="{{ username }} Avatar"
+                    style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); box-shadow: var(--shadow-md); object-fit: cover;">
+                <h1 class="text-gradient" style="font-size: 3.2rem; line-height: 1.1; margin-bottom: 0;">
+                    Welcome <br /> {{ username }}!
+                </h1>
+            </div>
+            <p style="font-size: 1.25rem; color: var(--text-muted); animation: slideInLeft 1s ease-out forwards;">
+                Ready to take the next step in your career? <br /> Connect with top employers and find jobs tailored to
+                you.
+            </p>
         </div>
-        
-        <div class="grid">
-            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
-                <h3 class="mb-2">Find Connections</h3>
-                <form action="/user-profile-search" method="POST" class="mb-2">
-                    <div class="form-group mb-2">
-                        <input type="text" id="profile" name="profile" placeholder="Search profiles by username...">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Search Profiles</button>
+
+        <!-- Right Side: Stacked Action Cards -->
+        <div style="flex: 1 1 400px; display: flex; flex-direction: column; gap: 1.5rem; max-width: 550px;">
+
+            <!-- Card 1 -->
+            <div class="card"
+                style="box-shadow: var(--shadow-sm); animation: slideInRight 0.8s ease-out forwards; animation-delay: 0.2s; opacity: 0; padding: 1.5rem 2rem;">
+                <h3 class="mb-2" style="font-size: 1.25rem; color: var(--text-main);">Find Connections</h3>
+                <form action="/user-profile-search" method="POST" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <input type="text" id="profile" name="profile" placeholder="Search profiles by username..."
+                        style="flex: 1; min-width: 200px; padding: 0.5rem 1rem; margin-bottom: 0;" required>
+                    <button type="submit" class="btn btn-primary"
+                        style="padding: 0.5rem 1rem; white-space: nowrap;">Search</button>
                 </form>
             </div>
-            
-            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
-                <h3 class="mb-2">Find Jobs</h3>
-                <p class="text-muted mb-3">Search our database for your dream job.</p>
-                <a href="/user-job-search" class="btn btn-primary btn-block">Go to Job Search</a>
+
+            <!-- Card 2 -->
+            <div class="card"
+                style="box-shadow: var(--shadow-sm); animation: slideInRight 0.8s ease-out forwards; animation-delay: 0.4s; opacity: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                <div>
+                    <h3 class="mb-1" style="font-size: 1.25rem; color: var(--text-main);">Find Jobs</h3>
+                    <p class="text-muted" style="margin-bottom: 0;">Search our database for your dream job.</p>
+                </div>
+                <a href="/user-job-search" class="btn btn-primary" style="white-space: nowrap; flex-shrink: 0;">Go to Search</a>
             </div>
-            
-            <div class="card text-center" style="box-shadow: var(--shadow-sm);">
-                <h3 class="mb-2">Manage Account</h3>
-                <p class="text-muted mb-3">Keep your profile and security up to date.</p>
-                <a href="/user-update-profile" class="btn btn-secondary btn-block">Update Password</a>
+
+            <!-- Card 3 -->
+            <div class="card"
+                style="box-shadow: var(--shadow-sm); animation: slideInRight 0.8s ease-out forwards; animation-delay: 0.6s; opacity: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                <div>
+                    <h3 class="mb-1" style="font-size: 1.25rem; color: var(--text-main);">Manage Account</h3>
+                    <p class="text-muted" style="margin-bottom: 0;">Keep your security up to date.</p>
+                </div>
+                <a href="/user-update-profile" class="btn btn-secondary" style="white-space: nowrap; flex-shrink: 0;">Update
+                    Password</a>
             </div>
+
         </div>
     </div>
 </div>
+
+<style>
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
 {% endblock %}

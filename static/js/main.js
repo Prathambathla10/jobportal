@@ -52,22 +52,26 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // 4. Form Submit Loading State
-    const forms = document.querySelectorAll("form");
-    forms.forEach(form => {
-        form.addEventListener("submit", function() {
-            const submitBtn = form.querySelector("button[type='submit'], input[type='submit']");
-            if (submitBtn) {
-                // Prevent multiple submissions by slightly dimming and disabling pointer events
-                submitBtn.classList.add("loading");
-                if (submitBtn.tagName.toLowerCase() === "button") {
-                    submitBtn.dataset.originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = "Processing... <span class='spinner'></span>";
-                } else if (submitBtn.tagName.toLowerCase() === "input") {
-                    submitBtn.dataset.originalValue = submitBtn.value;
-                    submitBtn.value = "Processing...";
-                }
+
+
+    // 5. Mobile Menu Toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navbarNav = document.querySelector('.navbar-nav');
+
+    if (mobileMenuBtn && navbarNav) {
+        mobileMenuBtn.addEventListener('click', function() {
+            navbarNav.classList.toggle('active');
+            // Animate hamburger into an X
+            const bars = document.querySelectorAll('.mobile-menu-btn .bar');
+            if (navbarNav.classList.contains('active')) {
+                bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                bars[1].style.opacity = '0';
+                bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+            } else {
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
             }
         });
-    });
+    }
 });

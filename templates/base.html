@@ -1,25 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Job Portal{% endblock %}</title>
-    
-    <!-- Google Fonts: Inter -->
+
+    <!-- Google Fonts: Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
     <nav class="navbar">
+        {% if session.get('role') == 'user' %}
+        <a href="/user-dashboard" class="navbar-brand">ProJob Portal</a>
+        {% elif session.get('role') == 'employer' %}
+        <a href="/employeer-dashboard" class="navbar-brand">ProJob Portal</a>
+        {% else %}
         <a href="/" class="navbar-brand">ProJob Portal</a>
+        {% endif %}
+        <button class="mobile-menu-btn" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
         <div class="navbar-nav">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/user-login" class="nav-link">Job Seekers</a>
-            <a href="/employeer-login" class="nav-link">Employers</a>
+            {% if session.get('role') == 'user' %}
+            {% if request.path not in ['/user-job-search', '/user-dashboard'] %}
+            <a href="/user-dashboard" class="nav-link">Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="nav-link">Logout</a>
+            {% elif session.get('role') == 'employer' %}
+            {% if request.path != '/employeer-dashboard' %}
+            <a href="/employeer-dashboard" class="nav-link">Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="nav-link">Logout</a>
+            {% else %}
+            <a href="/#about" class="nav-link">About Us</a>
+            <a href="/#contact" class="nav-link">Contact Us</a>
+            {% endif %}
         </div>
     </nav>
 
@@ -35,4 +59,5 @@
     <!-- Main Script -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>

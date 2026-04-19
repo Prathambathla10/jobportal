@@ -1,37 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Job Posting{% endblock %}
+{% block title %}Edit Job Posting{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="card" style="max-width: 600px; margin: 0 auto;">
         <div class="card-header">
-            <h2 class="card-title">Create Job Posting</h2>
-            <p class="card-subtitle">Fill in the details to publish a new job.</p>
+            <h2 class="card-title">Edit Job Posting</h2>
+            <p class="card-subtitle">Update the details for {{ job.job_title }}.</p>
         </div>
         
-        <form action="/create-job" method="POST">
+        <form action="/edit-job/{{ job.id }}" method="POST">
             <div class="form-group">
                 <label for="jobTitle">Job Title</label>
-                <input type="text" id="jobTitle" name="jobTitle" required placeholder="e.g. Senior Developer">
+                <input type="text" id="jobTitle" name="jobTitle" required value="{{ job.job_title }}">
             </div>
-            
+
             <div class="form-group">
                 <label for="stipend">Stipend / Salary</label>
-                <input type="text" id="stipend" name="stipend" required placeholder="e.g. $50,000/year or Unpaid">
+                <input type="text" id="stipend" name="stipend" required value="{{ job.stipend }}">
             </div>
             
             <div class="form-group">
                 <label for="jobDescription">Job Description</label>
-                <textarea id="jobDescription" name="jobDescription" required rows="4" placeholder="Describe the role and responsibilities..."></textarea>
+                <textarea id="jobDescription" name="jobDescription" required rows="4">{{ job.job_description }}</textarea>
             </div>
 
             <div class="form-group checkbox-group mt-3 mb-4">
-                <input type="checkbox" id="checkbox" name="checkbox" value="Vacant">
+                <input type="checkbox" id="checkbox" name="checkbox" value="Vacant" {% if job.job_status == 'Vacant' or job.job_status == 'vacant' %}checked{% endif %}>
                 <label for="checkbox" style="margin-bottom: 0;">Mark as Vacant (Leave unchecked if filled)</label>
             </div>
             
-            <button type="submit" class="btn btn-primary btn-block mb-3">Publish Job</button>
+            <button type="submit" class="btn btn-primary btn-block mb-3">Save Changes</button>
         </form>
         
         <div class="text-center">
