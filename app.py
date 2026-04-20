@@ -1,14 +1,19 @@
 from flask import Flask,render_template,redirect, request,url_for, session
 import mysql.connector
 from flask_mail import Mail,Message
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app=Flask(__name__)
 app.secret_key = 'projob_portal_secret_key'
 
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '0101'
-app.config['MYSQL_DB'] = 'jobportal'
+app.config['MYSQL_HOST'] = os.environ.get("MYSQL_HOST")
+app.config['MYSQL_USER'] = os.environ.get("MYSQL_USER")
+app.config['MYSQL_PASSWORD'] = str(os.environ.get("MYSQL_PASSWORD"))
+app.config['MYSQL_DB'] = os.environ.get("MYSQL_DB")
 
 def get_mysql_connection():
     return mysql.connector.connect(
@@ -26,8 +31,8 @@ mail_config = {
     "MAIL_PORT": 465 ,
     "MAIL_USE_TLS": False,  
     "MAIL_USE_SSL":True,
-    "MAIL_USERNAME": "prathamsautomatedmails@gmail.com",
-    "MAIL_PASSWORD": "",
+    "MAIL_USERNAME": os.environ.get("MAIL_USERNAME"),
+    "MAIL_PASSWORD": os.environ.get("MAIL_PASSWORD"),
     "MAIL_DEFAULT_SENDER" :"prathamsautomatedmails@gmail.com"
 }
 
@@ -38,79 +43,70 @@ mail = Mail(app)
 def index():
     return render_template('index.html')
 
-@app.route('/user-login')
+@app.route('/user-login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        connection = get_mysql_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        #Check for suspended acoount
+        cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
+        user = cursor.fetchone()
+
+        cursor.execute("SELECT status FROM users WHERE username = %s", (username,))
+        suspended_user = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        if suspended_user and suspended_user['status'] == 'suspended':
+            return "Your account is suspended "
+        elif user:
+            # Successful login, redirect to dashboard
+            session['username'] = username
+            session['role'] = 'user'
+            return redirect(url_for('user_dashboard'))
+        else:
+            # Invalid credentials, redirect back to the login page
+            return "username or password is incorrect"
+
     return render_template('user-login.html')
 
 
-@app.route('/user-login', methods=['POST','GET'])
-def login1():
 
-    username = request.form['username']
-    password = request.form['password']
-
-    connection = get_mysql_connection()
-    cursor = connection.cursor(dictionary=True)
-    
-
-    #Check for suspended acoount
-    
-    cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-    user = cursor.fetchone()
-
-    cursor.execute ("SELECT status FROM users WHERE username = %s",(username,))
-    suspended_user=cursor.fetchone()
-
-
-    cursor.close()
-    connection.close()
-
-    if suspended_user and suspended_user['status'] == 'suspended':
-        return "Your account is suspended "
-
-
-    elif user:
-        # Successful login, redirect to dashboard
-        session['username'] = username
-        session['role'] = 'user'
-        return redirect(url_for('user_dashboard'))
-        
-    else:
-        # Invalid credentials, redirect back to the login page
-        return "username or password is incorrect"
-
-
-
-@app.route('/user-signup')
+@app.route('/user-signup', methods=['GET', 'POST'])
 def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        connection = get_mysql_connection()
+        cursor = connection.cursor()
+
+        # Check if the username is already taken
+        cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            # Username already exists, handle accordingly (e.g., display an error message)
+            cursor.close()
+            connection.close()
+            return "Username already exists. Please choose a different username."
+
+        # If the username is unique, insert the new user into the database
+        cursor.execute('INSERT INTO users (username,password) VALUES (%s, %s)', (username, password))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        # Successful signup, you can redirect to a login page or another page
+        return render_template("user-half-step.html", username=username)
+
     return render_template('user-signup.html')
-
-
-@app.route("/user-signup",methods=["POST","GET"])
-def signup1():
-    username = request.form['username']
-    password = request.form['password']
-
-    connection = get_mysql_connection()
-    cursor = connection.cursor()
-
-    # Check if the username is already taken
-    cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
-    existing_user = cursor.fetchone()
-
-    if existing_user:
-        # Username already exists, handle accordingly (e.g., display an error message)
-        return "Username already exists. Please choose a different username."
-
-    # If the username is unique, insert the new user into the database
-    cursor.execute('INSERT INTO users (username,password) VALUES (%s, %s)', (username, password))
-    connection.commit()
-
-    cursor.close()
-    connection.close()
-
-    # Successful signup, you can redirect to a login page or another page
-    return render_template("user-half-step.html",username=username)
 
 @app.route('/user-update-profile', methods=['GET', 'POST'])
 def update():
@@ -140,69 +136,63 @@ def update():
         return "Password Updated successfully !! <br> Go back to <a href='/user-dashboard'>dashboard</a>"
 
 
-@app.route('/employeer-login')
-def emp_login():
-    return render_template('employeer-login.html')
-
-
 @app.route('/employeer-login', methods=['POST','GET'])
 def emp_login1():
+    if request.method == 'POST':
 
-    username = request.form['username']
-    password = request.form['password']
+        username = request.form['username']
+        password = request.form['password']
 
-    connection = get_mysql_connection()
-    cursor = connection.cursor(dictionary=True)
+        connection = get_mysql_connection()
+        cursor = connection.cursor(dictionary=True)
 
-    cursor.execute('SELECT username FROM employers WHERE username = %s AND password = %s', (username, password))
-    user = cursor.fetchone()
+        cursor.execute('SELECT username FROM employers WHERE username = %s AND password = %s', (username, password))
+        user = cursor.fetchone()
 
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
 
-    if user:
-        # Successful login, redirect to dashboard
-        session['username'] = username
-        session['role'] = 'employer'
-        return redirect(url_for('employeer_dashboard'))
-        
-    else:
-        # Invalid credentials, redirect back to the login page
-        return "username or password is incorrect"
+        if user:
+            # Successful login, redirect to dashboard
+            session['username'] = username
+            session['role'] = 'employer'
+            return redirect(url_for('employeer_dashboard'))
+            
+        else:
+            # Invalid credentials, redirect back to the login page
+            return "username or password is incorrect"
+    return render_template('employeer-login.html')    
 
-
-
-@app.route('/employeer-signup')
-def empsignup():
-    return render_template('employeer-signup.html')
 
 
 @app.route("/employeer-signup",methods=["POST","GET"])
 def empsignup1():
-    username = request.form['username']
-    password = request.form['password']
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-    connection = get_mysql_connection()
-    cursor = connection.cursor()
+        connection = get_mysql_connection()
+        cursor = connection.cursor()
 
-    # Check if the username is already taken
-    cursor.execute('SELECT * FROM employers WHERE username = %s', (username,))
-    existing_user = cursor.fetchone()
+        # Check if the username is already taken
+        cursor.execute('SELECT * FROM employers WHERE username = %s', (username,))
+        existing_user = cursor.fetchone()
 
-    if existing_user:
-        # Username already exists, handle accordingly (e.g., display an error message)
-        return "Username already exists. Please choose a different username."
+        if existing_user:
+            # Username already exists, handle accordingly (e.g., display an error message)
+            return "Username already exists. Please choose a different username."
 
-    # If the username is unique, insert the new user into the database
-    cursor.execute('INSERT INTO employers (username,password) VALUES (%s, %s)', (username, password))
-    connection.commit()
+        # If the username is unique, insert the new user into the database
+        cursor.execute('INSERT INTO employers (username,password) VALUES (%s, %s)', (username, password))
+        connection.commit()
 
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
 
-    # Successful signup, you can redirect to a login page or another page
-    return render_template("employeer-half-step.html",username=username)
+        # Successful signup, you can redirect to a login page or another page
+        return render_template("employeer-half-step.html",username=username)
 
+    return render_template('employeer-signup.html')
 
 
 @app.route('/create-user-profile/<username>')
